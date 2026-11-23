@@ -1,8 +1,8 @@
 import Cart from "../../Models/cartSchema.js";
 import Order from "../../Models/orderSchema.js";
 import Product from "../../Models/productSchema.js";
-import { assessRisk, FRAUD_BLOCK_SCORE } from "../../utils/fraud.js";
-import { resolveCharge } from "../../utils/currency.js";
+import { assessRisk, FRAUD_BLOCK_SCORE } from "../../utils/Fraud.js";
+import { resolveCharge } from "../../utils/Currency.js";
 import { creditSellersForOrder } from "../walletApis/walletService.js";
 
 export const httpError = (status, message) =>
