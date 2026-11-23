@@ -36,12 +36,11 @@ import searchRouter from "./Routers/Searchrouter.js";
 
 const app = express();
 const PORT = process.env.PORT || 9000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_URL = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: CLIENT_URL, credentials: true } });
 setIO(io);
-
 
 // Sockets must carry the same login cookie as the REST API; each user joins a private room.
 io.use((socket, next) => {
@@ -58,7 +57,6 @@ io.use((socket, next) => {
 });
 io.on("connection", (socket) => socket.join(`user:${socket.userId}`));
 
-
 app.set("trust proxy", 1); // required behind Render/Railway/Nginx for secure cookies
 app.use(securityMiddleware);
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
@@ -73,6 +71,18 @@ app.use(passport.initialize());
 
 // Flutterwave webhook (plain JSON; authenticated by the verif-hash header)
 app.post("/webhooks/flutterwave", flutterwaveWebhook);
+
+app.get("/", (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    service: "FlashXpress E-Commerce API",
+    status: "live",
+    productionReady: dbConnected,
+    environment: process.env.NODE_ENV || "production",
+    db: dbConnected,
+    timestamp: new Date().toISOString(),
+  });
+});
 
 app.get("/health", (req, res) =>
   res.json({ status: "ok", db: mongoose.connection.readyState === 1 })
@@ -114,7 +124,6 @@ const shutdown = (signal) => {
 };
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 process.on("SIGINT", () => shutdown("SIGINT"));
-
 
 // import express from "express";
 // import http from "http";
