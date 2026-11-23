@@ -1,6 +1,6 @@
 // src/hooks/useWishlist.js
 import { useContext } from "react";
-import WishlistContext from "../context/WishlistContext";
+import WishlistContext from "../context/wishlistContext/jsx";
 
 const SAFE_WISHLIST = {
   wishlist: [],
