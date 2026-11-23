@@ -1,6 +1,6 @@
 import Product from "../../Models/productSchema.js";
 import Order from "../../Models/orderSchema.js";
-import Wishlist from "../../Models/wishlistSchema.js";
+import Wishlist from "../../Models/Wishlistschema.js";
 import AiChat from "../../Models/Aischema.js";
 import { matchProducts } from "../../utils/Searchengine.js";
 import { getRates } from "../../utils/Currency.js";
