@@ -1,0 +1,1 @@
+export const PLACEHOLDER = "Type a message or ask the AI assistant...";
