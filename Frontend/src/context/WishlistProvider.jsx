@@ -1,6 +1,6 @@
 // src/context/WishlistProvider.jsx
 import { useEffect, useState } from "react";
-import WishlistContext from "./WishlistContext"; // adjust casing if needed
+import WishlistContext from "./wishlistContext"; // adjust casing if needed
 
 const STORAGE_KEY = "flashxpress_wishlist_v1";
 
