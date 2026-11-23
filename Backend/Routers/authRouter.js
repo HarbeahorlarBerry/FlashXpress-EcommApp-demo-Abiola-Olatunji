@@ -16,7 +16,7 @@ import {
   startSocialOAuth,
 } from "../Controllers/authApis/socialAuthController.js";
 import { authMiddleware, adminMiddleware } from "../Middlewares/authMiddleware.js";
-import { authLimiter, otpLimiter } from "../Middlewares/security.js";
+import { authLimiter, otpLimiter } from "../Middlewares/Security.js";
 
 const authRouter = Router();
 

@@ -1,5 +1,5 @@
 import { stripe } from "../../utils/stripe.js";
-import { resolveCharge, decimalsFor } from "../../utils/currency.js";
+import { resolveCharge, decimalsFor } from "../../utils/Currency.js";
 import Cart from "../../Models/cartSchema.js";
 import Order from "../../Models/orderSchema.js";
 import Product from "../../Models/productSchema.js";
