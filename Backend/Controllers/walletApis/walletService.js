@@ -1,4 +1,4 @@
-import { Wallet, WalletTx } from "../../Models/walletSchema.js";
+import { Wallet, WalletTx } from "../../Models/Walletschema.js";
 import Order from "../../Models/orderSchema.js";
 
 const feePercent = () => Math.min(Math.max(Number(process.env.PLATFORM_FEE_PERCENT ?? 10), 0), 90);
