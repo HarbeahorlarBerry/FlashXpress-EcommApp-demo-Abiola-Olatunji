@@ -11,8 +11,8 @@ import jwt from "jsonwebtoken";
 import "./MongoDb/passport.js";
 import connectDB from "./MongoDb/mongoDb.js";
 import { setIO } from "./core/socket.js";
-import { notFound, errorHandler } from "./core/errorHandler.js";
-import { securityMiddleware, apiLimiter, otpLimiter, aiLimiter } from "./Middlewares/security.js";
+import { notFound, errorHandler } from "./core/Errorhandler.js";
+import { securityMiddleware, apiLimiter, otpLimiter, aiLimiter } from "./Middlewares/Security.js";
 import { startCleanUp } from "./cronjobs/startCleanUp.js";
 import { stripeWebhookHandler, flutterwaveWebhook } from "./Controllers/paymentApis/barrel.js";
 
