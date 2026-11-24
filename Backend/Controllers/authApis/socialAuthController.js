@@ -1,4 +1,5 @@
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+const CLIENT_URL = String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
 
 // Lists the 5 supported continue options (no passkey)
 export const listContinueProviders = (req, res) => {

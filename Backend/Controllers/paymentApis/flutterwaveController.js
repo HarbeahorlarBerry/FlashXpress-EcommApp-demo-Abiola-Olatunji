@@ -3,7 +3,8 @@ import Order from "../../Models/orderSchema.js";
 import { initPayment, verifyTransaction } from "./flutterwave.js";
 import { markOrderPaid, releaseOrder, startCheckout } from "./checkoutHelpers.js";
 
-const CLIENT_URL = () => process.env.CLIENT_URL || "http://localhost:5173";
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+const CLIENT_URL = () => String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
 const currencyOf = () => (process.env.CURRENCY || "USD").toUpperCase();
 
 // Never fulfil on the redirect/webhook payload alone: match status, reference, currency and amount.

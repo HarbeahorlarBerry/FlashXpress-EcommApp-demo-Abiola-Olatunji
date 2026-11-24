@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import useAuth from "../../hooks/useAuth";
-
-const BACKEND_ORIGIN =
-  import.meta.env.VITE_API_ORIGIN || "http://localhost:9000";
+import { getGoogleAuthUrl } from "../../utils/apiOrigin";
 
 function ContinueWithFive({ onEmailOtp, onNotice }) {
   const handleGoogle = () => {
-    window.location.href = `${BACKEND_ORIGIN}/auth/google`;
+    window.location.href = getGoogleAuthUrl();
   };
 
   const handleOtherProvider = (name) => {
@@ -164,7 +162,7 @@ export default function RegisterModal({
 
     setSubmitting(true);
     try {
-      const { data } = await api.post("/auth/register/send-otp", {
+      const { data } = await api.post("/api/auth/register/send-otp", {
         gmail: cleanEmail,
       });
       setGmail(cleanEmail);
@@ -189,7 +187,7 @@ export default function RegisterModal({
 
     setSubmitting(true);
     try {
-      const { data } = await api.post("/auth/register/verify-otp", {
+      const { data } = await api.post("/api/auth/register/verify-otp", {
         gmail,
         otp: cleanOtp,
       });
@@ -222,7 +220,7 @@ export default function RegisterModal({
 
     setSubmitting(true);
     try {
-      const { data } = await api.post("/auth/register", {
+      const { data } = await api.post("/api/auth/register", {
         gmail,
         username: username.trim(),
         password,

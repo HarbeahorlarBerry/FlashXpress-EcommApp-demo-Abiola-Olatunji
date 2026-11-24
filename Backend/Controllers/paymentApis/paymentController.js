@@ -4,11 +4,16 @@ import Cart from "../../Models/cartSchema.js";
 import Order from "../../Models/orderSchema.js";
 import Product from "../../Models/productSchema.js";
 
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+
 const httpError = (status, message) =>
   Object.assign(new Error(message), { status });
 
 const CLIENT_URL = () =>
-  process.env.CLIENT_URL || process.env.FRONTEND_URL || "http://localhost:5173";
+  String(process.env.CLIENT_URL || process.env.FRONTEND_URL || LIVE_CLIENT_URL).replace(
+    /\/+$/,
+    ""
+  );
 
 async function restock(items) {
   await Promise.all(

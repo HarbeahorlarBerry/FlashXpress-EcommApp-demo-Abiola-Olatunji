@@ -1,8 +1,10 @@
 import { markOrderPaid, releaseOrder, startCheckout } from "./checkoutHelpers.js";
 
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+
 // Loaded lazily so the app boots without Stripe keys when another provider is selected.
 const getStripe = async () => (await import("../../utils/stripe.js")).stripe;
-const CLIENT_URL = () => process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_URL = () => String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
 
 // POST /api/payment/checkout  (when PAYMENT_PROVIDER=stripe)
 export const createStripeCheckout = async (req, res, next) => {

@@ -3,9 +3,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useAuth from "../hooks/useAuth";
+import { getBackendOrigin } from "../utils/apiOrigin";
 
-const BACKEND_ORIGIN =
-  import.meta.env.VITE_API_ORIGIN || "http://localhost:9000";
+const BACKEND_ORIGIN = getBackendOrigin();
 
 const SocketContext = createContext({ socket: null });
 

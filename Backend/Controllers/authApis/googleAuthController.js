@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import { setAuthCookie } from "../../utils/Cookies.js";
 
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+
 // ======================
 // GOOGLE CALLBACK
 // ======================
@@ -17,12 +19,17 @@ export const googleCallback = async (req, res) => {
       }
     );
 
-    // Pass both the response and the generated token to your cookie helper
     setAuthCookie(res, token);
 
-    // Redirect the user to your frontend dashboard/account page
-    return res.redirect(`${process.env.CLIENT_URL}/dashboard`);
-    
+    const clientUrl = String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
+    const redirectPath =
+      req.user.role === "admin" || req.user.role === "ultimateadmin"
+        ? "/dashboard/admin"
+        : req.user.role === "seller"
+        ? "/dashboard/seller"
+        : "/home";
+
+    return res.redirect(`${clientUrl}${redirectPath}`);
   } catch (error) {
     console.log(error);
 

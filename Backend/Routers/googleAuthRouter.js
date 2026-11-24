@@ -2,7 +2,8 @@ import { Router } from "express";
 import passport from "passport";
 import { googleCallback } from "../Controllers/authApis/googleAuthController.js";
 
-const clientUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+const clientUrl = String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
 
 const r = Router();
 r.get(

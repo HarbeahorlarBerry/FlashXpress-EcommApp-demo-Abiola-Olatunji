@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { sendMail } from "../../utils/sendEmail.js";
 import { setAuthCookie, clearAuthCookie } from "../../utils/Cookies.js";
 
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
 const hash = (v) => crypto.createHash("sha256").update(String(v)).digest("hex");
 const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -118,7 +119,7 @@ export const passwordResetRequest = async (req, res) => {
       user.passwordResetExpires = new Date(Date.now() + 20 * 60 * 1000);
       await user.save();
 
-      const baseUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
+      const baseUrl = String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
       const link = `${baseUrl}/reset-password?token=${token}`;
       try {
         await sendMail({
@@ -185,7 +186,6 @@ export const logout = (req, res) => {
   clearAuthCookie(res);
   return res.json({ status: "success", message: "Logged out successfully" });
 };
-
 
 // import User from "../../Models/usersSchema.js";
 // import bcryptjs from "bcryptjs";

@@ -1,5 +1,7 @@
+import { getGoogleAuthUrl } from "../utils/apiOrigin";
+
 export default function GoogleButton() {
-  const googleLoginUrl = "http://localhost:9000/api/auth/google";
+  const googleLoginUrl = getGoogleAuthUrl();
 
   return (
     <a

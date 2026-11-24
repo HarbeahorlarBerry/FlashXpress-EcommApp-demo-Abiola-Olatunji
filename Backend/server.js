@@ -34,9 +34,11 @@ import insightsRouter from "./Routers/Insightsrouter.js";
 import walletRouter from "./Routers/Walletrouter.js";
 import searchRouter from "./Routers/Searchrouter.js";
 
+const LIVE_CLIENT_URL = "https://aliexpress-ecommapp-demo-abiola-olatunji.onrender.com";
+
 const app = express();
-const PORT = process.env.PORT || 9000;
-const CLIENT_URL = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
+const PORT = Number(process.env.PORT) || 9000;
+const CLIENT_URL = String(process.env.CLIENT_URL || LIVE_CLIENT_URL).replace(/\/+$/, "");
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: CLIENT_URL, credentials: true } });
@@ -51,7 +53,7 @@ io.use((socket, next) => {
     const decoded = jwt.verify(decodeURIComponent(pair.slice(6)), process.env.JWT_SECRET);
     socket.userId = String(decoded.id);
     next();
-  } catch (error) {
+  } catch {
     next(new Error("unauthorized"));
   }
 });

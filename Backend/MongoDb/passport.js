@@ -5,6 +5,9 @@ import User from "../Models/usersSchema.js";
 
 dotenv.config();
 
+const LIVE_CALLBACK_URL =
+  "https://flashxpress-ecommapp-backend.onrender.com/auth/google/callback";
+
 const uniqueUsername = async (base) => {
   const clean =
     String(base || "user")
@@ -25,9 +28,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL:
-          process.env.GOOGLE_CALLBACK_URL ||
-          "http://localhost:9000/auth/google/callback",
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || LIVE_CALLBACK_URL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {

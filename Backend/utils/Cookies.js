@@ -1,3 +1,4 @@
+// utils/Cookies.js
 const isProd = process.env.NODE_ENV === "production";
 const useCrossSiteHttps =
   isProd && process.env.COOKIE_SECURE !== "false";
