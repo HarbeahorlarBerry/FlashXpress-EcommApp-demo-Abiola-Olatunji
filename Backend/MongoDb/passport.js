@@ -43,9 +43,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           if (user) {
             if (!user.googleId) {
               user.googleId = profile.id;
-              user.isVerified = true;
-              await user.save();
             }
+            user.isVerified = true;
+            await user.save();
           } else {
             user = await User.create({
               username: await uniqueUsername(profile.displayName),

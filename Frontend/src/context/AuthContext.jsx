@@ -1,32 +1,55 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, useCallback, createContext } from "react";
 import api from "../api/api";
 
 const AuthContext = createContext();
+
+const PORTAL_ENDPOINTS = {
+  buyer: "/api/auth/login/buyer",
+  seller: "/api/auth/login/seller",
+  admin: "/api/auth/login/admin",
+};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ======================
-  // LOGIN
-  // ======================
-  const login = async (gmail, password) => {
+  const fetchUser = useCallback(async () => {
     try {
-      const response = await api.post("/auth/login", {
-        gmail,
+      const response = await api.get("/api/auth/me");
+      setUser(response.data?.user || null);
+      return response.data?.user || null;
+    } catch {
+      setUser(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ======================
+  // LOGIN (DEFAULT OR PORTAL-SPECIFIC: "buyer" | "seller" | "admin")
+  // ======================
+  const login = async (identifier, password, portal = null) => {
+    try {
+      const trimmedId = String(identifier || "").trim();
+      const endpoint =
+        portal && PORTAL_ENDPOINTS[portal] ? PORTAL_ENDPOINTS[portal] : "/api/auth/login";
+
+      const response = await api.post(endpoint, {
+        identifier: trimmedId,
+        gmail: trimmedId,
         password,
+        ...(portal ? { portal } : {}),
       });
 
-      // Save token to localStorage so subsequent requests are authenticated
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
-
-      setUser(response.data.user);
+      const loggedInUser = response.data?.user || null;
+      setUser(loggedInUser);
 
       return {
         success: true,
+        user: loggedInUser,
       };
     } catch (error) {
       return {
@@ -41,8 +64,8 @@ export function AuthProvider({ children }) {
   // ======================
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
-    } catch (e) {
+      await api.post("/api/auth/logout");
+    } catch {
       // Handle logout error gracefully
     }
     localStorage.removeItem("token");
@@ -50,34 +73,17 @@ export function AuthProvider({ children }) {
   };
 
   // ======================
-  // FETCH USER
+  // FETCH CURRENT USER
   // ======================
   useEffect(() => {
     let mounted = true;
-
-    const fetchUser = async () => {
-      try {
-        const response = await api.get("/auth/me");
-        if (mounted) {
-          setUser(response.data.user);
-        }
-      } catch {
-        if (mounted) {
-          setUser(null);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchUser();
-
+    fetchUser().finally(() => {
+      if (!mounted) setUser(null);
+    });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [fetchUser]);
 
   return (
     <AuthContext.Provider
@@ -86,6 +92,7 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
+        refreshUser: fetchUser,
       }}
     >
       {children}

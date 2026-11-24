@@ -5,8 +5,22 @@ import api from "../api/api";
 import useAuth from "../hooks/useAuth";
 import RegisterModal from "../components/register/RegisterModel.jsx";
 
+const PORTALS = [
+  { id: "buyer", label: "Buyer", redirectTo: "/home" },
+  { id: "seller", label: "Seller", redirectTo: "/dashboard/seller" },
+  { id: "admin", label: "Admin / UltimateAdmin", redirectTo: "/dashboard/admin" },
+];
+
+function getRedirectForRole(role, selectedPortal) {
+  if (role === "ultimateadmin" || role === "admin") return "/dashboard/admin";
+  if (role === "seller" && selectedPortal === "seller") return "/dashboard/seller";
+  if (role === "seller") return "/home";
+  return "/home";
+}
+
 export default function Login() {
   const [mode, setMode] = useState("login"); // "login" | "recovery"
+  const [portal, setPortal] = useState("buyer"); // "buyer" | "seller" | "admin"
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [recoveryEmail, setRecoveryEmail] = useState("");
@@ -27,10 +41,11 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await login(identifier.trim(), password);
+      const res = await login(identifier.trim(), password, portal);
       if (res?.success) {
-        toast.success("Welcome back!");
-        navigate("/home");
+        const nextRoute = getRedirectForRole(res.user?.role, portal);
+        toast.success(`Welcome back${res.user?.username ? `, ${res.user.username}` : ""}!`);
+        navigate(nextRoute);
       } else {
         const msg = res?.message || "Password or username is incorrect";
         setErrorMsg(msg);
@@ -63,7 +78,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/password-reset-request", {
+      const { data } = await api.post("/api/auth/password-reset-request", {
         gmail: trimmedEmail,
         email: trimmedEmail,
       });
@@ -115,16 +130,41 @@ export default function Login() {
 
       {/* Main Login / Recovery Card */}
       <div className="w-full max-w-md md:max-w-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 md:p-12 shadow-xl text-zinc-900 dark:text-zinc-100">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-black tracking-tight mb-2">
             {mode === "login" ? "Sign in to your account" : "Recover your password"}
           </h1>
           <p className="text-xs md:text-sm text-gray-500 dark:text-zinc-400">
             {mode === "login"
-              ? "Welcome back! Enter your username or email and password to continue."
+              ? "Choose your login portal and enter your username or email and password."
               : "Enter your registered email/gmail address and we will send you a reset link."}
           </p>
         </div>
+
+        {mode === "login" && (
+          <div className="mb-6 grid grid-cols-3 gap-2 rounded-2xl bg-gray-100 dark:bg-zinc-800/80 p-1.5">
+            {PORTALS.map((p) => {
+              const active = portal === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    setPortal(p.id);
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                  className={`rounded-xl py-2.5 px-2 text-xs font-bold transition cursor-pointer ${
+                    active
+                      ? "bg-orange-600 text-white shadow-sm"
+                      : "text-gray-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {errorMsg && (
           <div
@@ -199,7 +239,9 @@ export default function Login() {
               disabled={loading}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-2xl text-sm transition shadow-lg cursor-pointer disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading
+                ? "Signing in..."
+                : `Sign In as ${PORTALS.find((p) => p.id === portal)?.label || "User"}`}
             </button>
           </form>
         ) : (

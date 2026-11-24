@@ -2,13 +2,18 @@ import { Router } from "express";
 import passport from "passport";
 import { googleCallback } from "../Controllers/authApis/googleAuthController.js";
 
+const clientUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
+
 const r = Router();
-r.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
+r.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"], session: false })
+);
 r.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=google`,
+    failureRedirect: `${clientUrl}/login?error=google`,
   }),
   googleCallback
 );

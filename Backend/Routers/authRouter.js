@@ -1,6 +1,9 @@
 import { Router } from "express";
 import {
   logginIn,
+  buyerLogin,
+  sellerLogin,
+  adminLogin,
   getCurrentUser,
   passwordResetRequest,
   passwordReset,
@@ -15,7 +18,11 @@ import {
   listContinueProviders,
   startSocialOAuth,
 } from "../Controllers/authApis/socialAuthController.js";
-import { authMiddleware, adminMiddleware } from "../Middlewares/authMiddleware.js";
+import {
+  authMiddleware,
+  adminMiddleware,
+  ultimateAdminMiddleware,
+} from "../Middlewares/authMiddleware.js";
 import { authLimiter, otpLimiter } from "../Middlewares/Security.js";
 
 const authRouter = Router();
@@ -34,9 +41,12 @@ authRouter.post("/register", authLimiter, completeRegistration);
 authRouter.post("/register/complete", authLimiter, completeRegistration);
 
 // ======================
-// LOGIN & SESSION
+// LOGIN & SESSION (BUYER, SELLER, ADMIN)
 // ======================
 authRouter.post("/login", authLimiter, logginIn);
+authRouter.post("/login/buyer", authLimiter, buyerLogin);
+authRouter.post("/login/seller", authLimiter, sellerLogin);
+authRouter.post("/login/admin", authLimiter, adminLogin);
 authRouter.get("/me", authMiddleware, getCurrentUser);
 authRouter.post("/logout", logout);
 
@@ -54,11 +64,20 @@ authRouter.post("/password-reset-request", authLimiter, passwordResetRequest);
 authRouter.post("/password-reset", authLimiter, passwordReset);
 
 // ======================
-// ADMIN
+// ADMIN & ULTIMATE ADMIN
 // ======================
 authRouter.get("/admin/dashboard", authMiddleware, adminMiddleware, (req, res) => {
-  res.json({ message: "Welcome Admin" });
+  res.json({ message: "Welcome Admin", role: req.user.role });
 });
+
+authRouter.get(
+  "/ultimate-admin/dashboard",
+  authMiddleware,
+  ultimateAdminMiddleware,
+  (req, res) => {
+    res.json({ message: "Welcome UltimateAdmin", role: req.user.role });
+  }
+);
 
 export default authRouter;
 

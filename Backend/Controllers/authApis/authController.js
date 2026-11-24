@@ -8,6 +8,12 @@ import { setAuthCookie, clearAuthCookie } from "../../utils/Cookies.js";
 const hash = (v) => crypto.createHash("sha256").update(String(v)).digest("hex");
 const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const PORTAL_ROLES = {
+  buyer: ["user"],
+  seller: ["seller"],
+  admin: ["admin", "ultimateadmin"],
+};
+
 const publicUser = (u) => ({
   id: u._id,
   username: u.username,
@@ -17,7 +23,7 @@ const publicUser = (u) => ({
   isVerified: u.isVerified,
 });
 
-export const logginIn = async (req, res) => {
+const authenticateForPortal = async (req, res, portal = null) => {
   try {
     const loginId = String(
       req.body.identifier || req.body.username || req.body.gmail || req.body.email || ""
@@ -51,6 +57,16 @@ export const logginIn = async (req, res) => {
       });
     }
 
+    const activePortal = portal || req.body.portal || null;
+    if (activePortal && PORTAL_ROLES[activePortal]) {
+      if (!PORTAL_ROLES[activePortal].includes(user.role)) {
+        return res.status(403).json({
+          status: "error",
+          message: `Account role "${user.role}" cannot sign in through the ${activePortal} login portal`,
+        });
+      }
+    }
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -71,6 +87,11 @@ export const logginIn = async (req, res) => {
     });
   }
 };
+
+export const logginIn = (req, res) => authenticateForPortal(req, res, null);
+export const buyerLogin = (req, res) => authenticateForPortal(req, res, "buyer");
+export const sellerLogin = (req, res) => authenticateForPortal(req, res, "seller");
+export const adminLogin = (req, res) => authenticateForPortal(req, res, "admin");
 
 export const getCurrentUser = (req, res) =>
   res.json({ status: "success", user: publicUser(req.user) });
@@ -97,7 +118,7 @@ export const passwordResetRequest = async (req, res) => {
       user.passwordResetExpires = new Date(Date.now() + 20 * 60 * 1000);
       await user.save();
 
-      const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+      const baseUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/+$/, "");
       const link = `${baseUrl}/reset-password?token=${token}`;
       try {
         await sendMail({

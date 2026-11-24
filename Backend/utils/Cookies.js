@@ -1,5 +1,6 @@
 const isProd = process.env.NODE_ENV === "production";
-const useCrossSiteHttps = isProd && process.env.COOKIE_SECURE === "true";
+const useCrossSiteHttps =
+  isProd && process.env.COOKIE_SECURE !== "false";
 
 export const cookieOptions = {
   httpOnly: true,

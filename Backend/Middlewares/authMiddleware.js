@@ -25,7 +25,7 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-// Roles: "user" (buyer), "seller", "admin"
+// Roles: "user" (buyer), "seller", "admin", "ultimateadmin"
 export const requireRole =
   (...roles) =>
   (req, res, next) => {
@@ -40,8 +40,10 @@ export const requireRole =
     next();
   };
 
-export const adminMiddleware = requireRole("admin");
-export const sellerMiddleware = requireRole("seller", "admin");
+export const buyerMiddleware = requireRole("user", "seller", "admin", "ultimateadmin");
+export const sellerMiddleware = requireRole("seller", "admin", "ultimateadmin");
+export const adminMiddleware = requireRole("admin", "ultimateadmin");
+export const ultimateAdminMiddleware = requireRole("ultimateadmin");
 
 // Attaches req.user when a valid cookie is present, but never rejects the request.
 export const optionalAuth = async (req, res, next) => {
@@ -57,7 +59,6 @@ export const optionalAuth = async (req, res, next) => {
   }
   next();
 };
-
 
 
 // import jwt from "jsonwebtoken";
